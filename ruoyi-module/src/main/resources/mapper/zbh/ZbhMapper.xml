@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.zbh.mapper.ZbhMapper">
+
+    <resultMap type="com.ruoyi.zbh.domain.YunLeiServer" id="YunLeiServerResult">
+        <result property="id"    column="id"    />
+        <result property="hostName"    column="hostName"    />
+        <result property="serverIp"    column="serverIp"    />
+        <result property="serverScore"    column="serverScore"    />
+        <result property="lastUpdateTime"    column="lastUpdateTime"    />
+        <result property="tm"    column="tm"    />
+    </resultMap>
+
+    <resultMap type="com.ruoyi.zbh.domain.NonGenuineSoftware" id="NonGenuineSoftwareResult">
+        <result property="ip"    column="ip"    />
+        <result property="softName"    column="soft_name"    />
+        <result property="version"    column="version"    />
+        <result property="isUpdate"    column="is_update"    />
+        <result property="installTime"    column="install_time"    />
+        <result property="corp"    column="corp"    />
+    </resultMap>
+
+    <select id="selectBigDataIndex" resultType="java.util.Map">
+        select CONVERT(varchar(16),tm,120) + ': ' + item as info from [360_ebda_1] where id=1
+    </select>
+
+    <select id="selectCollectorOffline" resultType="java.util.Map">
+        select CONVERT(varchar(16),tm,120) + ': ' + item as info from [360_ebda_1] where id=5
+    </select>
+
+    <select id="selectErrorMessages" resultType="java.util.Map">
+        select CONVERT(varchar(16),tm,120) + ': ' + note + ': ' + item as info from [360_ebda_1] where id!=1 and item!=''
+    </select>
+
+    <select id="selectNetworkWarningAndDataLake" resultType="java.util.Map">
+        select 
+            CONVERT(varchar(16),sj,120) + ': ' + score as warning,
+            CONVERT(varchar(16),dwg_sj,120) + ': ' + dwg_fault + ' 年检:'+dwg_zcnj as dwg_info,
+            CONVERT(varchar(16),[数据湖_tm],120) as lake_tm,
+            [数据湖_num] as lake_num,
+            datediff(mi, [数据湖_tm], getdate()) as lake_dt
+        from [360_ebda] where id=1
+    </select>
+
+    <select id="selectNonGenuineStats" resultType="java.util.Map">
+        select count(*) as pc_count, CONVERT(varchar(19),max(tm),120) as update_time, CONVERT(varchar(19),max(tm_1),120) as check_time from [360V10_list]
+    </select>
+
+    <select id="selectSoftwareCount" resultType="int">
+        select count(*) from [360V10_software]
+    </select>
+
+    <select id="selectYunLeiServers" resultMap="YunLeiServerResult">
+        select id,hostName,serverIp,serverScore,CONVERT(varchar(19),lastUpdateTimeStr,120) as lastUpdateTime,CONVERT(varchar(19),tm,120) as tm from [云垒]
+    </select>
+
+    <update id="executeSp360Zbh">
+        exec SP_360_ZBH
+    </update>
+
+    <select id="selectNonGenuineSoftwareList" resultMap="NonGenuineSoftwareResult">
+        select a.ip, b.soft_name,b.version,b.is_update,CONVERT(varchar(10),b.install_time,120) as install_time,b.corp 
+        from [360V10_list] a, [360V10_software] b,[360V10_非正版化统计] c  
+        where a.key_id = b.key_id and c.id=b.id and c.key_id=a.key_id
+        and b.soft_name not like '%WPS Office  2023 For Chnenergy Group%'
+    </select>
+</mapper>

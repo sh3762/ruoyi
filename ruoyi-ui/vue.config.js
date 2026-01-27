@@ -48,7 +48,12 @@ module.exports = {
         changeOrigin: true
       }
     },
-    disableHostCheck: true
+    disableHostCheck: true,
+    // 解决外网映射端口不一致导致的资源加载卡顿/HMR连接失败问题
+    // 当外网端口(25780)与内网端口(80)不一致时，需显式指定外网地址
+    public: '111.40.120.108:25780',
+    // 开启 DevServer Gzip 压缩 (优化外网首屏加载)
+    compress: true
   },
   css: {
     loaderOptions: {

@@ -12,10 +12,12 @@ spring:
             # 从库数据源
             slave:
                 # 从数据源开关/默认关闭
-                enabled: false
-                url: 
-                username: 
-                password: 
+                enabled: true
+                url: jdbc:jtds:sqlserver://10.33.1.16:1433/rtdb
+                username: user
+                password: user123
+                driverClassName: net.sourceforge.jtds.jdbc.Driver
+                validationQuery: SELECT 1
             # 初始连接数
             initialSize: 5
             # 最小连接池数量
