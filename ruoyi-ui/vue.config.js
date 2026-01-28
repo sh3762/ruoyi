@@ -12,6 +12,8 @@ const name = process.env.VUE_APP_TITLE || '若依管理系统' // 网页标题
 const baseUrl = 'http://localhost:8080' // 后端接口
 
 const port = process.env.port || process.env.npm_config_port || 80 // 端口
+const externalPublic = '111.40.120.108:25780'
+const devPublic = (process.env.VUE_APP_PUBLIC_HOST || 'localhost') + ':' + port
 
 // vue.config.js 配置说明
 //官方vue.config.js 参考文档 https://cli.vuejs.org/zh/config/#css-loaderoptions
@@ -49,9 +51,7 @@ module.exports = {
       }
     },
     disableHostCheck: true,
-    // 解决外网映射端口不一致导致的资源加载卡顿/HMR连接失败问题
-    // 当外网端口(25780)与内网端口(80)不一致时，需显式指定外网地址
-    public: '111.40.120.108:25780',
+    public: devPublic,
     // 开启 DevServer Gzip 压缩 (优化外网首屏加载)
     compress: true
   },

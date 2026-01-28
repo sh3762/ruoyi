@@ -80,7 +80,7 @@ public class ZbhServiceImpl implements IZbhService {
 
     @Override
     public List<NonGenuineSoftware> getNonGenuineSoftwareList() {
-        zbhMapper.executeSp360Zbh();
+        // zbhMapper.executeSp360Zbh(); // 暂时注释，避免频繁调用存储过程影响数据库
         return zbhMapper.selectNonGenuineSoftwareList();
     }
 }
