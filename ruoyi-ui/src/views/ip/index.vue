@@ -13,17 +13,17 @@
               @keyup.enter.native="handleQuery"
             />
           </el-form-item>
-          <el-form-item label="备注" prop="note">
+          <el-form-item label="备注">
             <el-input
-              v-model="queryParams.note"
-              placeholder="请输入备注"
+              v-model="noteFilter"
+              placeholder="输入备注关键字过滤"
               clearable
               size="small"
               style="width: 240px"
-              @keyup.enter.native="handleQuery"
+              @input="handleNoteFilter"
             />
           </el-form-item>
-          <el-form-item label="MAC地址" prop="mac">
+          <el-form-item label="MAC" prop="mac">
             <el-input
               v-model="queryParams.mac"
               placeholder="请输入MAC地址"
@@ -72,7 +72,7 @@
           <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
         </el-row>
 
-        <el-table v-loading="loading" :data="ipList" @cell-dblclick="handleDblClick" @sort-change="handleSortChange" :default-sort="{prop: 'ip', order: 'ascending'}" border>
+        <el-table v-loading="loading" :data="ipList" @cell-dblclick="handleDblClick" @sort-change="handleSortChange" :default-sort="{prop: 'ip', order: 'ascending'}" :empty-text="emptyText" border>
           <el-table-column label="IP地址" align="center" prop="ip" sortable="custom" width="130" />
           <el-table-column label="备注" align="center" prop="note" min-width="150" :show-overflow-tooltip="true">
              <template slot-scope="scope">
@@ -150,8 +150,16 @@ export default {
       total: 0,
       // 所有IP数据（用于客户端分页）
       allIpList: [],
+      filteredIpList: [],
       // IP表格数据
       ipList: [],
+      noteFilter: "",
+      emptyText: "暂无数据",
+      currentSort: {
+        prop: "ip",
+        order: "ascending"
+      },
+      noteFilterTimer: null,
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -163,7 +171,6 @@ export default {
         pageNum: 1,
         pageSize: 100,
         ip: '10.113.',
-        note: undefined,
         mac: undefined,
         swip: undefined,
         showDuplicate: false
@@ -190,26 +197,86 @@ export default {
       this.loading = true;
       listIp(this.queryParams).then(response => {
         if (response.rows && response.rows.length > 0) {
-            // 默认按IP地址升序排列
-            this.allIpList = response.rows.sort((a, b) => {
-                if (!a.ip) return 1;
-                if (!b.ip) return -1;
-                const ipA = a.ip.split('.').map(Number);
-                const ipB = b.ip.split('.').map(Number);
-                for (let i = 0; i < 4; i++) {
-                    if (ipA[i] !== ipB[i]) return ipA[i] - ipB[i];
-                }
-                return 0;
-            });
-            this.total = response.rows.length;
-            this.sliceList();
+            this.allIpList = response.rows;
+            this.applyFilters(true);
         } else {
             this.allIpList = [];
+            this.filteredIpList = [];
             this.ipList = [];
             this.total = 0;
+            this.emptyText = this.noteFilter && this.noteFilter.trim() ? "无匹配结果" : "暂无数据";
         }
         this.loading = false;
       });
+    },
+    applyFilters(resetPage) {
+        const keyword = this.noteFilter ? this.noteFilter.trim().toLowerCase() : "";
+        const keywordCompact = keyword.replace(/\s+/g, "");
+        this.filteredIpList = this.allIpList.filter(row => {
+            const note = row.note == null ? "" : String(row.note);
+            const mac = row.mac == null ? "" : String(row.mac);
+            const noteCompact = note.replace(/\s+/g, "");
+            const macCompact = mac.replace(/\s+/g, "");
+            const hasNote = noteCompact.length > 0;
+            const hasMac = macCompact.length > 0;
+            if (!hasNote && !hasMac) return false;
+            if (keywordCompact) {
+                if (!hasNote) return false;
+                return noteCompact.toLowerCase().includes(keywordCompact);
+            }
+            return true;
+        });
+        this.total = this.filteredIpList.length;
+        if (resetPage) {
+            this.queryParams.pageNum = 1;
+        }
+        this.sortFilteredList();
+        this.sliceList();
+        this.emptyText = keyword && this.filteredIpList.length === 0 ? "无匹配结果" : "暂无数据";
+    },
+    sortFilteredList() {
+        const prop = this.currentSort.prop || "ip";
+        const order = this.currentSort.order || "ascending";
+        this.filteredIpList.sort((a, b) => {
+            let valA = a[prop];
+            let valB = b[prop];
+
+            if (valA == null) valA = "";
+            if (valB == null) valB = "";
+
+            let result = 0;
+            if (prop === "ip" || prop === "swip") {
+                const ipAStr = String(valA).trim().replace(/\s+/g, "");
+                const ipBStr = String(valB).trim().replace(/\s+/g, "");
+                if (ipAStr === "" && ipBStr === "") return 0;
+                if (ipAStr === "") return 1;
+                if (ipBStr === "") return -1;
+
+                const ipA = ipAStr.split(".").map(Number);
+                const ipB = ipBStr.split(".").map(Number);
+                for (let i = 0; i < 4; i++) {
+                    const numA = ipA[i] || 0;
+                    const numB = ipB[i] || 0;
+                    if (numA !== numB) {
+                        result = numA - numB;
+                        break;
+                    }
+                }
+            } else if (prop === "vlan" || prop === "port") {
+                const numA = parseFloat(valA);
+                const numB = parseFloat(valB);
+                if (isNaN(numA) && isNaN(numB)) result = 0;
+                else if (isNaN(numA)) result = 1;
+                else if (isNaN(numB)) result = -1;
+                else result = numA - numB;
+            } else {
+                if (valA < valB) result = -1;
+                else if (valA > valB) result = 1;
+                else result = 0;
+            }
+
+            return order === "ascending" ? result : -result;
+        });
     },
     /** 客户端分页切片 */
     sliceList() {
@@ -217,7 +284,7 @@ export default {
         const limit = this.queryParams.pageSize;
         const start = (page - 1) * limit;
         const end = page * limit;
-        this.ipList = this.allIpList.slice(start, end);
+        this.ipList = this.filteredIpList.slice(start, end);
     },
     /** 分页事件处理 */
     handlePagination() {
@@ -230,51 +297,17 @@ export default {
           prop = 'ip';
           order = 'ascending';
       }
-
-      this.allIpList.sort((a, b) => {
-        let valA = a[prop];
-        let valB = b[prop];
-
-        // 处理空值
-        if (valA == null) valA = '';
-        if (valB == null) valB = '';
-
-        let result = 0;
-        if (prop === 'ip' || prop === 'swip') {
-             // IP排序逻辑
-             if (valA === '' && valB === '') return 0;
-             if (valA === '') return 1;
-             if (valB === '') return -1;
-             
-             const ipA = String(valA).split('.').map(Number);
-             const ipB = String(valB).split('.').map(Number);
-             for (let i = 0; i < 4; i++) {
-                 const numA = ipA[i] || 0;
-                 const numB = ipB[i] || 0;
-                 if (numA !== numB) {
-                     result = numA - numB;
-                     break;
-                 }
-             }
-        } else if (prop === 'vlan' || prop === 'port') {
-            // 数字排序
-            const numA = parseFloat(valA);
-            const numB = parseFloat(valB);
-            // 处理非数字情况
-            if (isNaN(numA) && isNaN(numB)) result = 0;
-            else if (isNaN(numA)) result = 1; // 把非数字放后面
-            else if (isNaN(numB)) result = -1;
-            else result = numA - numB;
-        } else {
-            // 字符串排序
-            if (valA < valB) result = -1;
-            else if (valA > valB) result = 1;
-            else result = 0;
-        }
-
-        return order === 'ascending' ? result : -result;
-      });
+      this.currentSort = { prop, order };
+      this.sortFilteredList();
       this.sliceList();
+    },
+    handleNoteFilter() {
+      if (this.noteFilterTimer) {
+        clearTimeout(this.noteFilterTimer);
+      }
+      this.noteFilterTimer = setTimeout(() => {
+        this.applyFilters(true);
+      }, 120);
     },
     /** 搜索按钮操作 */
     handleQuery() {
@@ -292,6 +325,7 @@ export default {
     /** 重置按钮操作 */
     resetQuery() {
       this.resetForm("queryForm");
+      this.noteFilter = "";
       this.handleQuery();
     },
     /** 强力刷新 */
