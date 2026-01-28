@@ -1,0 +1,18 @@
+-- SQL Server 2000 兼容建表语句
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'IP_MANAGEMENT' AND type = 'U')
+    DROP TABLE IP_MANAGEMENT
+GO
+
+CREATE TABLE IP_MANAGEMENT (
+    ip VARCHAR(50) NOT NULL PRIMARY KEY,
+    mac VARCHAR(50) NULL,
+    swip VARCHAR(50) NULL,
+    note VARCHAR(255) NULL
+)
+GO
+
+-- 插入测试数据
+INSERT INTO IP_MANAGEMENT (ip, mac, swip, note) VALUES ('192.168.1.100', '00-11-22-33-44-55', '192.168.1.1', 'Test PC 1')
+INSERT INTO IP_MANAGEMENT (ip, mac, swip, note) VALUES ('192.168.1.101', 'AA-BB-CC-DD-EE-FF', '192.168.1.1', 'Test PC 2')
+GO

@@ -30,6 +30,11 @@ server:
       max: 800
       # Tomcat启动初始化的线程数，默认值10
       min-spare: 100
+  # 开启 Gzip 压缩 (大幅减少外网传输流量)
+  compression:
+    enabled: true
+    mime-types: application/json,application/xml,text/html,text/xml,text/plain
+    min-response-size: 1024
 
 # 日志配置
 logging:
@@ -87,12 +92,6 @@ spring:
         max-active: 8
         # 连接池最大阻塞等待时间（使用负值表示没有限制）
         max-wait: -1ms
-
-  # 开启 Gzip 压缩 (大幅减少外网传输流量)
-  compression:
-    enabled: true
-    mime-types: application/json,application/xml,text/html,text/xml,text/plain
-    min-response-size: 1024
 
 # token配置
 token:
