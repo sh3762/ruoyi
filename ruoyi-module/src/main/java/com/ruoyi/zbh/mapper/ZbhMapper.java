@@ -11,7 +11,7 @@ public interface ZbhMapper {
     // Queries for SystemStatus
     Map<String, Object> selectBigDataIndex();
     Map<String, Object> selectCollectorOffline();
-    List<Map<String, Object>> selectErrorMessages();
+    List<Map<String, Object>> selectErrorMessagesV2();
     Map<String, Object> selectNetworkWarningAndDataLake();
     Map<String, Object> selectNonGenuineStats();
     int selectSoftwareCount();

@@ -23,7 +23,7 @@ public interface IpMapper
      */
     @Select({
         "<script>",
-        "SELECT TOP 100000 COALESCE(a.ip, i.ip) as ip, a.mac, c.swip, i.note, a.sj, COALESCE(c.vlan, a.vlan) as vlan, COALESCE(c.port, a.port) as port",
+        "SELECT COALESCE(a.ip, i.ip) as ip, a.mac, c.swip, i.note, a.sj, COALESCE(c.vlan, a.vlan) as vlan, COALESCE(c.port, a.port) as port",
         "FROM (",
         "  SELECT a.ip, a.mac, a.sj, a.vlan, a.port",
         "  FROM hw_arp a",

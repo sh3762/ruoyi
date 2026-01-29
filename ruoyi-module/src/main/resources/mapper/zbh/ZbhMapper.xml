@@ -30,8 +30,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         select CONVERT(varchar(16),tm,120) + ': ' + item as info from [360_ebda_1] where id=5
     </select>
 
-    <select id="selectErrorMessages" resultType="java.util.Map">
-        select CONVERT(varchar(16),tm,120) + ': ' + note + ': ' + item as info from [360_ebda_1] where id!=1 and item!=''
+    <select id="selectErrorMessagesV2" resultType="java.util.Map">
+        select CONVERT(varchar(16),tm,120) + ': ' + note + ': ' + item as info, id from [360_ebda_1] where id in (2, 3, 4) and item!=''
     </select>
 
     <select id="selectNetworkWarningAndDataLake" resultType="java.util.Map">

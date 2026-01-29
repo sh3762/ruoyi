@@ -117,11 +117,11 @@ export default {
         
         // Prepare Misc Data with formatting
         this.miscData = [
-          { name: '大数据指标', value: data.bigDataIndex, hasDetail: data.errorMessages && data.errorMessages.length > 0, detail: data.errorMessages },
+          { name: '大数据指标', value: data.bigDataIndex, hasDetail: false },
           { name: '大网管报警', value: data.networkWarning, hasDetail: false },
           { name: '数据湖状态', value: data.dataLakeDiff > 5 ? `<span style="color: red">${data.dataLakeStatus}</span>` : data.dataLakeStatus, hasDetail: false },
           { name: '采集器离线', value: data.collectorOffline && data.collectorOffline.length > 18 ? `<span style="color: lightcoral">${data.collectorOffline}</span>` : data.collectorOffline, hasDetail: false },
-          { name: '错误信息', value: data.errorMessages ? '有错误信息' : '无', hasDetail: !!data.errorMessages, detail: data.errorMessages }
+          { name: '问题IP', value: data.errorMessages || '无', hasDetail: false }
         ];
       });
     },

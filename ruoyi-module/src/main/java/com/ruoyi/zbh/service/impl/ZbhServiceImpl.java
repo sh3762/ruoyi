@@ -33,7 +33,7 @@ public class ZbhServiceImpl implements IZbhService {
         if (res2 != null) status.setCollectorOffline((String) res2.get("info"));
 
         // 3. Error Messages
-        List<Map<String, Object>> res3 = zbhMapper.selectErrorMessages();
+        List<Map<String, Object>> res3 = zbhMapper.selectErrorMessagesV2();
         StringBuilder errMsg = new StringBuilder();
         if (res3 != null) {
             for (Map<String, Object> row : res3) {

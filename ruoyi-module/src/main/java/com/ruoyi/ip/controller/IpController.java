@@ -51,19 +51,6 @@ public class IpController extends BaseController
     }
 
     /**
-     * 导出IP列表
-     */
-    @PreAuthorize("@ss.hasPermi('monitor:ip:export')")
-    @Log(title = "IP管理", businessType = BusinessType.EXPORT)
-    @GetMapping("/export")
-    public AjaxResult export(IpInfo ipInfo)
-    {
-        List<IpInfo> list = ipService.selectIpList(ipInfo);
-        ExcelUtil<IpInfo> util = new ExcelUtil<IpInfo>(IpInfo.class);
-        return util.exportExcel(list, "IP数据");
-    }
-
-    /**
      * 获取统计信息
      */
     @PreAuthorize("@ss.hasPermi('monitor:ip:list')")
