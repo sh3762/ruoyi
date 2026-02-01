@@ -1,0 +1,1 @@
+SELECT menu_id, menu_name, path, component FROM sys_menu WHERE menu_name LIKE '%导航%' OR path LIKE '%navigation%';

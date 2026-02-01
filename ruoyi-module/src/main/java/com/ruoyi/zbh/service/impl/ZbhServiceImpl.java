@@ -52,7 +52,7 @@ public class ZbhServiceImpl implements IZbhService {
             String lakeNum = lakeNumObj != null ? String.valueOf(lakeNumObj) : "0";
             
             Object lakeDtObj = res4.get("lake_dt");
-            Integer lakeDt = lakeDtObj instanceof Integer ? (Integer) lakeDtObj : 0;
+            Integer lakeDt = lakeDtObj instanceof Number ? ((Number) lakeDtObj).intValue() : 0;
             status.setDataLakeDiff(lakeDt);
             
             String dataLake = lakeTm + ": 发送 " + lakeNum + " 点";
@@ -62,7 +62,8 @@ public class ZbhServiceImpl implements IZbhService {
         // 5. Stats
         Map<String, Object> res5 = zbhMapper.selectNonGenuineStats();
         if (res5 != null) {
-            status.setPcCount((Integer) res5.get("pc_count"));
+            Object pcCountObj = res5.get("pc_count");
+            status.setPcCount(pcCountObj instanceof Number ? ((Number) pcCountObj).intValue() : 0);
             status.setUpdateTime((String) res5.get("update_time"));
             status.setCheckTime((String) res5.get("check_time"));
         }

@@ -1,8 +1,6 @@
 package com.ruoyi.kq.service;
 
 import com.ruoyi.kq.domain.FaceHkLog;
-import com.ruoyi.kq.domain.IceClock;
-import com.ruoyi.kq.domain.SisTag;
 import java.util.List;
 import java.util.Map;
 
