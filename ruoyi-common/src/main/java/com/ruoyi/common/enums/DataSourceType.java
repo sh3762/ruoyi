@@ -15,10 +15,5 @@ public enum DataSourceType
     /**
      * 从库
      */
-    SLAVE,
-
-    /**
-     * 考勤数据库
-     */
-    KQ
+    SLAVE
 }

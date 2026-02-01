@@ -1,8 +1,6 @@
 package com.ruoyi.kq.mapper;
 
 import com.ruoyi.kq.domain.FaceHkLog;
-import com.ruoyi.kq.domain.IceClock;
-import com.ruoyi.kq.domain.SisTag;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import java.util.List;
@@ -16,14 +14,6 @@ import java.util.Map;
 @Mapper
 public interface KqMapper 
 {
-    /**
-     * 查询ICE签到列表
-     * 
-     * @return 结果
-     */
-    @Select("SELECT name, srq, sc1, sc2, tm FROM ice_clock ORDER BY sc1")
-    public List<IceClock> selectIceClockList();
-
     /**
      * 查询海康刷脸全部记录
      * 
@@ -40,12 +30,4 @@ public interface KqMapper
      */
     @Select("${sql}")
     public List<Map<String, Object>> selectFaceHkLogBySql(String sql);
-
-    /**
-     * 查询SIS测点列表
-     * 
-     * @return 结果
-     */
-    @Select("SELECT id, tagname, `describe`, round(`value`,2) as value, tm FROM sis_tags ORDER by idx")
-    public List<SisTag> selectSisTagList();
 }

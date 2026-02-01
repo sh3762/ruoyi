@@ -13,17 +13,9 @@ spring:
             slave:
                 # 从数据源开关/默认关闭
                 enabled: true
-                url: jdbc:jtds:sqlserver://10.33.1.16:1433/rtdb
-                username: user
-                password: user123
-                driverClassName: net.sourceforge.jtds.jdbc.Driver
-                validationQuery: SELECT 1
-            # 考勤数据源
-            kq:
-                enabled: true
-                url: jdbc:mysql://10.33.1.8:3306/zjz?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=GMT%2B8
-                username: zjz
-                password: "2764"
+                url: jdbc:mysql://10.33.4.200:3306/work?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+                username: root
+                password: Sh37623086-
                 driverClassName: com.mysql.cj.jdbc.Driver
                 validationQuery: SELECT 1
             # 初始连接数

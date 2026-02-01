@@ -3,8 +3,6 @@ package com.ruoyi.kq.service.impl;
 import com.ruoyi.common.annotation.DataSource;
 import com.ruoyi.common.enums.DataSourceType;
 import com.ruoyi.common.utils.DateUtils;
-import com.ruoyi.kq.domain.IceClock;
-import com.ruoyi.kq.domain.SisTag;
 import com.ruoyi.kq.mapper.KqMapper;
 import com.ruoyi.kq.service.IKqService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,27 +17,11 @@ import java.util.*;
  * @author ruoyi
  */
 @Service
-@DataSource(DataSourceType.KQ)
+@DataSource(DataSourceType.SLAVE)
 public class KqServiceImpl implements IKqService 
 {
     @Autowired
     private KqMapper kqMapper;
-
-    @Override
-    public List<IceClock> selectIceClockList() 
-    {
-        List<IceClock> list = kqMapper.selectIceClockList();
-        Date now = new Date();
-        for (IceClock clock : list) {
-            if (clock.getSrq() != null) {
-                // Calculate day difference
-                long diff = now.getTime() - clock.getSrq().getTime();
-                long days = diff / (1000 * 60 * 60 * 24);
-                clock.setDayDiff(days);
-            }
-        }
-        return list;
-    }
 
     @Override
     public Map<String, Object> selectFaceHkLogData() 
@@ -122,12 +104,6 @@ public class KqServiceImpl implements IKqService
         result.put("allLogs", allList);
         
         return result;
-    }
-
-    @Override
-    public List<SisTag> selectSisTagList() 
-    {
-        return kqMapper.selectSisTagList();
     }
 
     private void assertSafeSelect(String sql) {

@@ -49,15 +49,6 @@ public class DruidConfig
         return druidProperties.dataSource(dataSource);
     }
 
-    @Bean
-    @ConfigurationProperties("spring.datasource.druid.kq")
-    @ConditionalOnProperty(prefix = "spring.datasource.druid.kq", name = "enabled", havingValue = "true")
-    public DataSource kqDataSource(DruidProperties druidProperties)
-    {
-        DruidDataSource dataSource = DruidDataSourceBuilder.create().build();
-        return druidProperties.dataSource(dataSource);
-    }
-
     @Bean(name = "dynamicDataSource")
     @Primary
     public DynamicDataSource dataSource(DataSource masterDataSource)
@@ -65,7 +56,6 @@ public class DruidConfig
         Map<Object, Object> targetDataSources = new HashMap<>();
         targetDataSources.put(DataSourceType.MASTER.name(), masterDataSource);
         setDataSource(targetDataSources, DataSourceType.SLAVE.name(), "slaveDataSource");
-        setDataSource(targetDataSources, DataSourceType.KQ.name(), "kqDataSource");
         return new DynamicDataSource(masterDataSource, targetDataSources);
     }
     
