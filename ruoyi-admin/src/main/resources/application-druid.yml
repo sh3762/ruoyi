@@ -27,9 +27,9 @@ spring:
                 driverClassName: com.mysql.cj.jdbc.Driver
                 validationQuery: SELECT 1
             # 初始连接数
-            initialSize: 5
+            initialSize: 1
             # 最小连接池数量
-            minIdle: 10
+            minIdle: 1
             # 最大连接池数量
             maxActive: 20
             # 配置获取连接等待超时的时间
@@ -45,7 +45,7 @@ spring:
             # 配置一个连接在池中最大生存的时间，单位是毫秒
             maxEvictableIdleTimeMillis: 900000
             # 配置检测连接是否有效
-            validationQuery: SELECT 1 FROM DUAL
+            validationQuery: SELECT 1
             testWhileIdle: true
             testOnBorrow: false
             testOnReturn: false
